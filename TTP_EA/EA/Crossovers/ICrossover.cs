@@ -7,9 +7,9 @@ using TTP_EA.Specimen;
 
 namespace TTP_EA.EA.Crossovers
 {
-    public interface ICrossover
+    public interface ICrossover<T> where T : ITTPSpecimen<T>
     {
         double CrossoverProbability { get; set; }
-        IList<TTP_Specimen> Crossover(IList<TTP_Specimen> specimens);
+        IList<T> Crossover(IList<T> specimens);
     }
 }

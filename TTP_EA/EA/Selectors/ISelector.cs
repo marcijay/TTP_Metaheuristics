@@ -7,8 +7,8 @@ using TTP_EA.Specimen;
 
 namespace TTP_EA.EA.Selectors
 {
-    public interface ISelector
+    public interface ISelector<T> where T :ITTPSpecimen<T>
     {
-        IList<TTP_Specimen> Select(IList<TTP_Specimen> currentPopulation);
+        IList<T> Select(IList<T> currentPopulation);
     }
 }

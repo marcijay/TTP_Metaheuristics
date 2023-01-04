@@ -22,7 +22,7 @@ namespace TTP_EA.TS.Neighbors
             for (int i = 0; i < size; i++)
             {
                 var newSpecimen = Neighbor.Change(specimen.Clone());
-                GreedyCreator.FillGreedyKnapsack(newSpecimen);
+                GreedyCreator<TTP_Specimen>.FillGreedyKnapsack(newSpecimen);
                 neighborhood.Add(newSpecimen);
             }
             return neighborhood;

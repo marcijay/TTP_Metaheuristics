@@ -13,10 +13,11 @@ namespace TTP_EA.SA
 {
     public static class ProgramSA
     {
+        private static readonly string baseDataPath = "./../../../Data";
+        private static readonly string baseLogPath = "./../../../../../Wyniki";
+
         public static void GetTenSAResults(string fileName)
         {
-            string baseDataPath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab/Dane/";
-            string baseLogPath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab/Wyniki/";
             var dataPath = Path.Combine(baseDataPath, fileName);
 
             var data = TTP_Reader.Load(dataPath);
@@ -29,7 +30,7 @@ namespace TTP_EA.SA
             INeighbor neighbor = new SwapNeighbor();
 
             NeighborhoodFinder neighborhoodFinder = new NeighborhoodFinder(neighbor);
-            ISpecimenCreator creator = new RandomCreator(data, 0.3);
+            ISpecimenCreator<TTP_Specimen> creator = new RandomCreator<TTP_Specimen>(data, 0.3);
 
             CSV_Logger<TSRecord> logger = new CSV_Logger<TSRecord>(logPath);
 
@@ -80,7 +81,7 @@ namespace TTP_EA.SA
             Console.WriteLine($"{maxScore}\t{minScore}\t{avgScore}\t{standardDeviation}");
         }
 
-        public static TTP_Specimen RunSingleSATestAsync(TTP_Data data, ISpecimenCreator creator, int iterations, int neighbors, double startTemperature, double targetTemperature, double coolingRatio, NeighborhoodFinder neighborhoodFinder, string currentLogFileName, string baseLogPath, string testNo)
+        public static TTP_Specimen RunSingleSATestAsync(TTP_Data data, ISpecimenCreator<TTP_Specimen> creator, int iterations, int neighbors, double startTemperature, double targetTemperature, double coolingRatio, NeighborhoodFinder neighborhoodFinder, string currentLogFileName, string baseLogPath, string testNo)
         {
             string currentTestLogFileName = currentLogFileName + "_" + testNo + ".csv";
             string logPath = Path.Combine(baseLogPath, currentTestLogFileName);
@@ -92,7 +93,7 @@ namespace TTP_EA.SA
             return bestFoundSpecimen;
         }
 
-        public static TestInstanceData RunNeighborhoodSATestsAsync(TTP_Data data, ISpecimenCreator creator, INeighbor neighbor, string neighborName, string fileNameNoExtension, string baseLogPath)
+        public static TestInstanceData RunNeighborhoodSATestsAsync(TTP_Data data, ISpecimenCreator<TTP_Specimen> creator, INeighbor neighbor, string neighborName, string fileNameNoExtension, string baseLogPath)
         {
             NeighborhoodFinder neighborhoodFinder = new NeighborhoodFinder(neighbor);
 
@@ -186,8 +187,6 @@ namespace TTP_EA.SA
 
         public static void GetTenSAResultsDividedAsynchronously(string fileName)
         {
-            string baseDataPath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab/Dane/";
-            string baseLogPath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab/Wyniki/";
             var dataPath = Path.Combine(baseDataPath, fileName);
 
             var data = TTP_Reader.Load(dataPath);
@@ -196,7 +195,7 @@ namespace TTP_EA.SA
             INeighbor neighborInverse = new InverseNeighbor();
             INeighbor neighborSwap = new SwapNeighbor();
 
-            ISpecimenCreator creator = new RandomCreator(data, 0.3);
+            ISpecimenCreator<TTP_Specimen> creator = new RandomCreator<TTP_Specimen>(data, 0.3);
 
             Task<TestInstanceData> inverseInstance = Task.Factory.StartNew(() => RunNeighborhoodSATestsAsync(data, creator, neighborInverse, "Inverse", fileNameNoExtension, baseLogPath));
             Task<TestInstanceData> swapInstance = Task.Factory.StartNew(() => RunNeighborhoodSATestsAsync(data, creator, neighborSwap, "Swap", fileNameNoExtension, baseLogPath));

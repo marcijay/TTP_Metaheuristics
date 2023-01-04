@@ -14,36 +14,44 @@ using TTP_EA.Specimen.Factories;
 
 namespace TTP_EA.EA
 {
-    public class EvolutionaryAlgorithm<T> : IEvolutionaryAlgorithm<T> where T : ITTPSpecimen<T>
+    public class EvolutionaryAlgorithmTwoMutations<T> : IEvolutionaryAlgorithm<T> where T : ITTPSpecimen<T>
     {
         IList<T> CurrentPopulation { get; set; }
-        IMutator<T> Mutator { get; }
+        IMutator<T> MutatorOne { get; }
+        IMutator<T> MutatorTwo { get; }
         ICrossover<T> Crossover { get; }
         ISelector<T> Selector { get; }
         ISpecimenFactory<T> Factory { get; }
+
+        readonly Random random;
         public uint PopulationSize { get; set; }
         public uint Generation { get; set; }
         public uint GenerationsToCheck { get; set; }
+        public float TypeOneMutationProbability { get; set; }
         public TTP_Data ProblemData { get; set; }
         public CSV_Logger<EARecord> Logger { get; set; }
 
-        public EvolutionaryAlgorithm(TTP_Data problemData, IMutator<T> mutator, ICrossover<T> crossover, ISelector<T> selector, ISpecimenFactory<T> factory, uint populationSize, uint generationsToCheck, CSV_Logger<EARecord> logger)
+        public EvolutionaryAlgorithmTwoMutations(TTP_Data problemData, IMutator<T> mutatorOne, IMutator<T> mutatorTwo, ICrossover<T> crossover, ISelector<T> selector, ISpecimenFactory<T> factory,float mutationOneProbability, uint populationSize, uint generationsToCheck, CSV_Logger<EARecord> logger)
         {
-            Mutator = mutator;
+            MutatorOne = mutatorOne;
+            MutatorTwo = mutatorTwo;
             Crossover = crossover;
             Selector = selector;
+            TypeOneMutationProbability = 1 - mutationOneProbability;
             PopulationSize = populationSize;
             GenerationsToCheck = generationsToCheck;
             ProblemData = problemData;
             Factory = factory;
             Logger = logger;
 
+            random = new Random();
             CurrentPopulation = new List<T>();
         }
 
         public void InitializePopulation()
         {
             CurrentPopulation.Clear();
+
             for (int i = 0; i < PopulationSize; i++)
             {
                 T specimen = Factory.ProduceSpecimen(i);
@@ -65,10 +73,30 @@ namespace TTP_EA.EA
         {
             var selectedSpecimens = Selector.Select(CurrentPopulation);
             var crossesSpecimens = Crossover.Crossover(selectedSpecimens);
-            var mutatedSpecimens = Mutator.Mutate(crossesSpecimens);
+
+            foreach(var specimen in crossesSpecimens)
+            {
+                if(TypeOneMutationProbability <= random.NextDouble())
+                {
+                    MutatorOne.MutateSingleSpecimen(specimen);
+                }
+                else
+                {
+                    MutatorTwo.MutateSingleSpecimen(specimen);
+                }
+            }
+            //IList<T> mutatedSpecimens;
+            //if (TypeOneMutationProbability <= random.NextDouble())
+            //{
+            //    mutatedSpecimens = MutatorOne.Mutate(crossesSpecimens);
+            //}
+            //else
+            //{
+            //    mutatedSpecimens = MutatorTwo.Mutate(crossesSpecimens);
+            //}
 
             Generation += 1;
-            CurrentPopulation = mutatedSpecimens;
+            CurrentPopulation = crossesSpecimens;
             (double maxScore, double minScore, double averageScore) = EvaluatePopulation();
             Logger.Log(new EARecord((int)Generation, maxScore, minScore, averageScore));
             //Console.WriteLine($"{Generation}\t\t{maxScore}\t\t{minScore}\t\t{averageScore}");
@@ -83,7 +111,7 @@ namespace TTP_EA.EA
             int genderTrue = 0;
             int genderFalse = 0;
 
-            foreach(var specimen in CurrentPopulation)
+            foreach (var specimen in CurrentPopulation)
             {
                 if(specimen is TTP_Specimen)
                 {
@@ -116,7 +144,7 @@ namespace TTP_EA.EA
             }
             double averageScore = scoreSum / CurrentPopulation.Count;
 
-            if(Generation == GenerationsToCheck - 1 || Generation == 0)
+            if (Generation == GenerationsToCheck - 1 || Generation == 0)
             {
                 Console.WriteLine($"Generation: {Generation}, Genders - True: {genderTrue}, False: {genderFalse}");
             }

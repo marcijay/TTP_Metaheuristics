@@ -13,7 +13,7 @@ namespace TTP_EA.SA
     public  class SimulatedAnnealing
     {
         public TTP_Data ProblemData { get; set; }
-        public ISpecimenCreator Creator { get; }
+        public ISpecimenCreator<TTP_Specimen> Creator { get; }
         public int Iterations { get; set; }
         public int NeighborhoodSize { get; set; }
         public double StartTemperature { get; set; }
@@ -24,7 +24,7 @@ namespace TTP_EA.SA
 
         public CSV_Logger<TSRecord> Logger { get; set; }
 
-        public SimulatedAnnealing(TTP_Data problemData, ISpecimenCreator creator, int iterations, int neighborhoodSize, double startTemperature, double targetTemperature, double coolingRatio, NeighborhoodFinder neighborhoodFinder, CSV_Logger<TSRecord> logger)
+        public SimulatedAnnealing(TTP_Data problemData, ISpecimenCreator<TTP_Specimen> creator, int iterations, int neighborhoodSize, double startTemperature, double targetTemperature, double coolingRatio, NeighborhoodFinder neighborhoodFinder, CSV_Logger<TSRecord> logger)
         {
             ProblemData = problemData;
             Creator = creator;

@@ -13,10 +13,10 @@ namespace TTP_EA.TS
 {
     public static class ProgramTS
     {
+        private static readonly string baseDataPath = "./../../../Data";
+        private static readonly string baseLogPath = "./../../../../../Wyniki";
         public static void GetTenTSResults(string fileName)
         {
-            string baseDataPath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab/Dane/";
-            string baseLogPath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab/Wyniki/";
             var dataPath = Path.Combine(baseDataPath, fileName);
 
             var data = TTP_Reader.Load(dataPath);
@@ -29,7 +29,7 @@ namespace TTP_EA.TS
             //INeighbor neighbor = new SwapNeighbor();
 
             NeighborhoodFinder neighborhoodFinder = new NeighborhoodFinder(neighbor);
-            ISpecimenCreator creator = new RandomCreator(data, 0.3);
+            ISpecimenCreator<TTP_Specimen> creator = new RandomCreator<TTP_Specimen>(data, 0.3);
 
             CSV_Logger<TSRecord> logger = new CSV_Logger<TSRecord>(logPath);
 
@@ -55,7 +55,7 @@ namespace TTP_EA.TS
             }
         }
 
-        public static TTP_Specimen RunSingleTSTestAsync(TTP_Data data, ISpecimenCreator creator, int iterations, int neighbors, int tabuSize, NeighborhoodFinder neighborhoodFinder, string currentLogFileName, string baseLogPath, string testNo)
+        public static TTP_Specimen RunSingleTSTestAsync(TTP_Data data, ISpecimenCreator<TTP_Specimen> creator, int iterations, int neighbors, int tabuSize, NeighborhoodFinder neighborhoodFinder, string currentLogFileName, string baseLogPath, string testNo)
         {
             string currentTestLogFileName = currentLogFileName + "_" + testNo + ".csv";
             string logPath = Path.Combine(baseLogPath, currentTestLogFileName);
@@ -67,7 +67,7 @@ namespace TTP_EA.TS
             return bestFoundSpecimen;
         }
 
-        public static TestInstanceData RunNeighborhoodTestsAsync(TTP_Data data, ISpecimenCreator creator, INeighbor neighbor, string neighborName, string fileNameNoExtension, string baseLogPath)
+        public static TestInstanceData RunNeighborhoodTestsAsync(TTP_Data data, ISpecimenCreator<TTP_Specimen> creator, INeighbor neighbor, string neighborName, string fileNameNoExtension, string baseLogPath)
         {
             NeighborhoodFinder neighborhoodFinder = new NeighborhoodFinder(neighbor);
 
@@ -149,8 +149,6 @@ namespace TTP_EA.TS
 
         public static void GetTenTSResultsDividedAsynchronously(string fileName)
         {
-            string baseDataPath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab/Dane/";
-            string baseLogPath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab/Wyniki/";
             var dataPath = Path.Combine(baseDataPath, fileName);
 
             var data = TTP_Reader.Load(dataPath);
@@ -159,7 +157,7 @@ namespace TTP_EA.TS
             INeighbor neighborInverse = new InverseNeighbor();
             INeighbor neighborSwap = new SwapNeighbor();
 
-            ISpecimenCreator creator = new RandomCreator(data, 0.3);
+            ISpecimenCreator<TTP_Specimen> creator = new RandomCreator<TTP_Specimen>(data, 0.3);
 
             Task<TestInstanceData> inverseInstance = Task.Factory.StartNew(() => RunNeighborhoodTestsAsync(data, creator, neighborInverse, "Inverse", fileNameNoExtension, baseLogPath));
             Task<TestInstanceData> swapInstance = Task.Factory.StartNew(() => RunNeighborhoodTestsAsync(data, creator, neighborSwap, "Swap", fileNameNoExtension, baseLogPath));
@@ -195,14 +193,12 @@ namespace TTP_EA.TS
 
             string bestConfigName = "";
 
-            string baseDataPath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab/Dane/";
-            string baseLogPath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab/Wyniki/";
             var dataPath = Path.Combine(baseDataPath, fileName);
 
             var data = TTP_Reader.Load(dataPath);
             var fileNameNoExtension = fileName.Substring(0, fileName.IndexOf("."));
 
-            ISpecimenCreator creator = new RandomCreator(data, 0.3);
+            ISpecimenCreator<TTP_Specimen> creator = new RandomCreator<TTP_Specimen>(data, 0.3);
 
             for (int neighborhood = 0; neighborhood < 2; neighborhood++)
             {

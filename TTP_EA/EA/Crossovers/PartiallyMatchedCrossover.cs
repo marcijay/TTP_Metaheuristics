@@ -8,23 +8,24 @@ using TTP_EA.Specimen;
 
 namespace TTP_EA.EA.Crossovers
 {
-    public class PartiallyMatchedCrossover : ICrossover
+    public class PartiallyMatchedCrossover<T> : ICrossover<T> where T : ITTPSpecimen<T>
     {
         public double CrossoverProbability { get; set; }
+        private readonly Random random;
 
         public PartiallyMatchedCrossover(double crossoverProbability)
         {
             CrossoverProbability = crossoverProbability;
+            random = new Random();
         }
 
-        public IList<TTP_Specimen> Crossover(IList<TTP_Specimen> specimens)
+        public IList<T> Crossover(IList<T> specimens)
         {
-            var random = new Random();
-            var prop = 1 - CrossoverProbability;
-            var newSpecimens = new List<TTP_Specimen>();
+            var probability = 1 - CrossoverProbability;
+            var newSpecimens = new List<T>();
             for (int i = 1; i < specimens.Count; i += 2)
             {
-                if (prop <= random.NextDouble())
+                if (probability <= random.NextDouble() && (specimens[i] is TTP_Specimen || specimens[i] is TTP_Specimen_Gendered && specimens[i - 1] is TTP_Specimen_Gendered && (specimens[i] as TTP_Specimen_Gendered).Gender != (specimens[i - 1] as TTP_Specimen_Gendered).Gender))
                 {
                     var (specimen1, specimen2) = CrossSpecimens(specimens[i - 1], specimens[i]);
                     newSpecimens.Add(specimen1);
@@ -36,7 +37,7 @@ namespace TTP_EA.EA.Crossovers
                     newSpecimens.Add(specimens[i].Clone());
                 }
             }
-            if (specimens.Count % 2 == 0)
+            if (specimens.Count % 2 == 1)
             {
                 var specimen = specimens[specimens.Count - 1].Clone();
                 newSpecimens.Add(specimen);
@@ -44,7 +45,7 @@ namespace TTP_EA.EA.Crossovers
             return newSpecimens;
         }
 
-        private (TTP_Specimen, TTP_Specimen) CrossSpecimens(TTP_Specimen specimen, TTP_Specimen otherSpecimen)
+        private (T, T) CrossSpecimens(T specimen, T otherSpecimen)
         {
             var newSpecimen = specimen.Clone();
             var newOtherSpecimen = otherSpecimen.Clone();

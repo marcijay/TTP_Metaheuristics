@@ -7,7 +7,7 @@ using TTP_EA.Data;
 
 namespace TTP_EA.Specimen.Creators
 {
-    public class GreedyCreator : ISpecimenCreator
+    public class GreedyCreator<T> : ISpecimenCreator<T> where T : ITTPSpecimen<T>
     {
         public TTP_Data ProblemData { get; set; }
 
@@ -15,7 +15,7 @@ namespace TTP_EA.Specimen.Creators
         {
             ProblemData = problemData;
         }
-        public void Create(TTP_Specimen specimen)
+        public void Create(T specimen)
         {
             HashSet<City> cities = ProblemData.Cities.ToHashSet();
             var distances = ProblemData.GetDistanceMatrix();
@@ -44,7 +44,7 @@ namespace TTP_EA.Specimen.Creators
             FillGreedyKnapsack(specimen);
         }
 
-        public static void FillGreedyKnapsack(TTP_Specimen specimen)
+        public static void FillGreedyKnapsack(T specimen)
         {
             specimen.RemoveAllItemsFromKnapsack();
             var itemValues = new Dictionary<Item, double>();
@@ -59,6 +59,24 @@ namespace TTP_EA.Specimen.Creators
                 }
                 pathLength += specimen.ProblemData.GetDistance(specimen.VisitedCities[i], specimen.VisitedCities[i - 1]);
             }
+            itemValues = itemValues.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            while (itemValues.Count > 0)
+            {
+                specimen.AddItemToKnapsack(itemValues.Keys.First());
+                itemValues.Remove(itemValues.Keys.First());
+            }
+        }
+
+        public static void FillGreedyKnapsackEasy(T specimen)
+        {
+            specimen.RemoveAllItemsFromKnapsack();
+            var itemValues = new Dictionary<Item, double>();
+
+            foreach(var item in specimen.ProblemData.Items)
+            {
+                itemValues.Add(item, item.Profit / item.Weight);
+            }
+
             itemValues = itemValues.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
             while (itemValues.Count > 0)
             {

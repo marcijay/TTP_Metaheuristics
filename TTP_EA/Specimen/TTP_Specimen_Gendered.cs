@@ -4,20 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TTP_EA.Data;
-using TTP_EA.Specimen.Creators;
 
 namespace TTP_EA.Specimen
 {
-    public class TTP_Specimen : ITTPSpecimen<TTP_Specimen>
+    public class TTP_Specimen_Gendered : ITTPSpecimen<TTP_Specimen_Gendered> 
     {
         public TTP_Data ProblemData { get; set; }
         public List<City> VisitedCities { get; set; }
         public HashSet<Item> TakenItems { get; set; }
-        public ISpecimenCreator<TTP_Specimen> Creator { get; }
+        public ISpecimenCreator<TTP_Specimen_Gendered> Creator { get; }
         public double KnapsackWeight { get; set; }
         public double? FitnessScore { get; set; }
+        public bool Gender { get; set; }
 
-        public TTP_Specimen(TTP_Data problemData, ISpecimenCreator<TTP_Specimen> creator)
+        public TTP_Specimen_Gendered(TTP_Data problemData, ISpecimenCreator<TTP_Specimen_Gendered> creator, bool gender)
         {
             ProblemData = problemData;
             VisitedCities = new List<City>();
@@ -25,6 +25,7 @@ namespace TTP_EA.Specimen
             KnapsackWeight = 0;
             Creator = creator;
             FitnessScore = null;
+            Gender = gender;
         }
 
         public void Init()
@@ -32,9 +33,9 @@ namespace TTP_EA.Specimen
             Creator.Create(this);
         }
 
-        public TTP_Specimen Clone()
+        public TTP_Specimen_Gendered Clone()
         {
-            TTP_Specimen clonedSpecimen = new TTP_Specimen(ProblemData, Creator);
+            TTP_Specimen_Gendered clonedSpecimen = new TTP_Specimen_Gendered(ProblemData, Creator, Gender);
             clonedSpecimen.VisitedCities = new List<City>(VisitedCities);
             clonedSpecimen.TakenItems = new HashSet<Item>(TakenItems);
             clonedSpecimen.KnapsackWeight = KnapsackWeight;
@@ -44,20 +45,20 @@ namespace TTP_EA.Specimen
 
         public override bool Equals(object? obj)
         {
-            if (obj is TTP_Specimen)
+            if (obj is TTP_Specimen_Gendered)
             {
-                return Equals((TTP_Specimen)obj);
+                return Equals((TTP_Specimen_Gendered)obj);
             }
             return false;
         }
 
-        public bool Equals(TTP_Specimen? other)
+        public bool Equals(TTP_Specimen_Gendered? other)
         {
             if (other == null)
             {
                 return false;
             }
-            if (VisitedCities.Count != other.VisitedCities.Count || TakenItems.Count != other.TakenItems.Count)
+            if (VisitedCities.Count != other.VisitedCities.Count || TakenItems.Count != other.TakenItems.Count || Gender != other.Gender)
             {
                 return false;
             }
@@ -87,7 +88,7 @@ namespace TTP_EA.Specimen
         {
             double distance = 0;
 
-            for(int i = 1; i < VisitedCities.Count; i++)
+            for (int i = 1; i < VisitedCities.Count; i++)
             {
                 distance += ProblemData.GetDistance(VisitedCities[i - 1], VisitedCities[i]);
 
@@ -111,26 +112,10 @@ namespace TTP_EA.Specimen
             return false;
         }
 
-        public void RemoveItemFromKnapsack(Item item)
-        {
-            TakenItems.Remove(item);
-            KnapsackWeight -= item.Weight;
-        }
-
         public void RemoveAllItemsFromKnapsack()
         {
             TakenItems = new HashSet<Item>();
             KnapsackWeight = 0;
-        }
-
-        public bool IsItemIsInKnapsack(Item item)
-        {
-            return TakenItems.Contains(item);
-        }
-
-        public Item[] GetKnapsackItems()
-        {
-            return TakenItems.ToArray();
         }
 
         private void UpdateWeight(ref double weight, City city)
@@ -162,7 +147,7 @@ namespace TTP_EA.Specimen
             {
                 profit += item.Profit;
             }
-            
+
             UpdateWeight(ref currentWeight, VisitedCities[0]);
 
             for (int i = 1; i < VisitedCities.Count; i++)

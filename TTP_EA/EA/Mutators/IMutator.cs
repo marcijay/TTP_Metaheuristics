@@ -7,9 +7,10 @@ using TTP_EA.Specimen;
 
 namespace TTP_EA.EA.Mutators
 {
-    public interface IMutator
+    public interface IMutator<T> where T : ITTPSpecimen<T>
     {
         double MutationProbability { get; set; }
-        IList<TTP_Specimen> Mutate(IList<TTP_Specimen> currentPopulation);
+        IList<T> Mutate(IList<T> currentPopulation);
+        void MutateSingleSpecimen(T specimen);
     }
 }

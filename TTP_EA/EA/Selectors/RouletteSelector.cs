@@ -7,7 +7,7 @@ using TTP_EA.Specimen;
 
 namespace TTP_EA.EA.Selectors
 {
-    public class RouletteSelection : ISelector
+    public class RouletteSelection<T> : ISelector<T> where T : ITTPSpecimen<T>
     {
         public bool IsMinimalizing { get; set; }
 
@@ -16,9 +16,9 @@ namespace TTP_EA.EA.Selectors
             IsMinimalizing = isMinimalizing;
         }
 
-        public virtual IList<TTP_Specimen> Select(IList<TTP_Specimen> currentPopulation)
+        public virtual IList<T> Select(IList<T> currentPopulation)
         {
-            Dictionary<TTP_Specimen, (double from, double to)> weightedSpecimens = new Dictionary<TTP_Specimen, (double from, double to)>();
+            Dictionary<T, (double from, double to)> weightedSpecimens = new Dictionary<T, (double from, double to)>();
             var sum = 0d;
             var min = double.MaxValue;
             var max = double.MinValue;
@@ -42,7 +42,7 @@ namespace TTP_EA.EA.Selectors
                 sum += normalizedScore;
             }
             Random random = new Random();
-            List<TTP_Specimen> selectedSpecimens = new List<TTP_Specimen>();
+            List<T> selectedSpecimens = new List<T>();
             for (int i = 0; i < currentPopulation.Count; i++)
             {
                 var value = random.NextDouble() * sum;

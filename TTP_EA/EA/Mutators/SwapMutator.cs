@@ -8,31 +8,48 @@ using TTP_EA.Specimen;
 
 namespace TTP_EA.EA.Mutators
 {
-    public class SwapMutator : IMutator
+    public class SwapMutator<T> : IMutator<T> where T : ITTPSpecimen<T>
     {
-        public double MutationProbability { get; set; }
+        private double _mutationProbability;
+        public double MutationProbability {
+            get
+            {
+                return _mutationProbability;
+            } 
+            set
+            {
+                _mutationProbability = value;
+                probability = 1 - value;
+            } }
+        private double probability;
+        private readonly Random random;
 
         public SwapMutator(double mutationProbability)
         {
             MutationProbability = mutationProbability;
+            random = new Random();
+            probability = 1 - MutationProbability;
         }
 
-        public IList<TTP_Specimen> Mutate(IList<TTP_Specimen> currentPopulation)
+        public IList<T> Mutate(IList<T> currentPopulation)
         {
-            Random random = new Random();
-            double probability = 1 - MutationProbability;
-            foreach (TTP_Specimen specimen in currentPopulation)
+            foreach (T specimen in currentPopulation)
             {
-                for (int i = 0; i < specimen.VisitedCities.Count; i++)
-                {
-                    if (probability <= random.NextDouble())
-                    {
-                        int index2 = random.Next(specimen.VisitedCities.Count);
-                        (specimen.VisitedCities[index2], specimen.VisitedCities[i]) = (specimen.VisitedCities[i], specimen.VisitedCities[index2]);
-                    }
-                }
+                MutateSingleSpecimen(specimen);
             }
             return currentPopulation;
+        }
+
+        public void MutateSingleSpecimen(T specimen)
+        {
+            for (int i = 0; i < specimen.VisitedCities.Count; i++)
+            {
+                if (probability <= random.NextDouble())
+                {
+                    int index2 = random.Next(specimen.VisitedCities.Count);
+                    (specimen.VisitedCities[index2], specimen.VisitedCities[i]) = (specimen.VisitedCities[i], specimen.VisitedCities[index2]);
+                }
+            }
         }
     }
 }

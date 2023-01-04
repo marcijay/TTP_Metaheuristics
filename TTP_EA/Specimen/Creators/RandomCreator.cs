@@ -7,7 +7,7 @@ using TTP_EA.Data;
 
 namespace TTP_EA.Specimen
 {
-    public class RandomCreator : ISpecimenCreator
+    public class RandomCreator<T> : ISpecimenCreator<T> where T : ITTPSpecimen<T>
     {
         public TTP_Data ProblemData { get; set; }
         public double ItemAddProbability { get; set; }
@@ -18,7 +18,7 @@ namespace TTP_EA.Specimen
             ItemAddProbability = itemAddProbability;
         }
 
-        public void Create(TTP_Specimen specimen)
+        public void Create(T specimen)
         {
             List<City> citiesToAdd = ProblemData.Cities.ToList();
 

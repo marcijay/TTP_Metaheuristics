@@ -13,7 +13,7 @@ namespace TTP_EA.TS
     public class TabuSearch
     {
         public TTP_Data ProblemData { get; set; }
-        public ISpecimenCreator Creator { get; }
+        public ISpecimenCreator<TTP_Specimen> Creator { get; }
         public int Iterations { get; set; }
         public int NeighborhoodSize { get; set; }
         public int TabuSize { get; set; }
@@ -25,7 +25,7 @@ namespace TTP_EA.TS
 
         public CSV_Logger<TSRecord> Logger { get; set; }
 
-        public TabuSearch(TTP_Data problemData, ISpecimenCreator creator, int iterations, int neighborhoodSize, int tabuSize, NeighborhoodFinder neighborhoodFinder, CSV_Logger<TSRecord> logger)
+        public TabuSearch(TTP_Data problemData, ISpecimenCreator<TTP_Specimen> creator, int iterations, int neighborhoodSize, int tabuSize, NeighborhoodFinder neighborhoodFinder, CSV_Logger<TSRecord> logger)
         {
             ProblemData = problemData;
             Creator = creator;

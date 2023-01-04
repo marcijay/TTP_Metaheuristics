@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace TTP_EA.Specimen
 {
-    public interface ISpecimenCreator
+    public interface ISpecimenCreator<T> where T : ITTPSpecimen<T>
     {
-        void Create(TTP_Specimen specimen); 
+        void Create(T specimen); 
     }
 }

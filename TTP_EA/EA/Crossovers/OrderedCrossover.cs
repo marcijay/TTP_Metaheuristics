@@ -8,23 +8,24 @@ using TTP_EA.Specimen;
 
 namespace TTP_EA.EA.Crossovers
 {
-    public class OrderedCrossover : ICrossover
+    public class OrderedCrossover<T> : ICrossover<T> where T : ITTPSpecimen<T>
     {
         public double CrossoverProbability { get; set; }
+        private readonly Random random;
 
         public OrderedCrossover(double probability)
         {
             CrossoverProbability = probability;
+            random = new Random();
         }
 
-        public IList<TTP_Specimen> Crossover(IList<TTP_Specimen> specimens)
+        public IList<T> Crossover(IList<T> specimens)
         {
-            var random = new Random();
             var probability = 1 - CrossoverProbability;
-            var newSpecimens = new List<TTP_Specimen>();
+            var newSpecimens = new List<T>();
             for (int i = 0; i < specimens.Count - 1; i++)
             {
-                if (probability <= random.NextDouble())
+                if (probability <= random.NextDouble() && (specimens[i] is TTP_Specimen || specimens[i] is TTP_Specimen_Gendered && specimens[i + 1] is TTP_Specimen_Gendered && (specimens[i] as TTP_Specimen_Gendered).Gender != (specimens[i + 1] as TTP_Specimen_Gendered).Gender))
                 {
                     var newSpecimen = CrossSpecimens(specimens[i], specimens[i + 1]);
                     newSpecimens.Add(newSpecimen);
@@ -38,7 +39,7 @@ namespace TTP_EA.EA.Crossovers
             return newSpecimens;
         }
 
-        private TTP_Specimen CrossSpecimens(TTP_Specimen specimen, TTP_Specimen otherSpecimen)
+        private T CrossSpecimens(T specimen, T otherSpecimen)
         {
             var newSpecimen = otherSpecimen.Clone();
             var random = new Random();

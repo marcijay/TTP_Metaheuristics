@@ -14,7 +14,7 @@ namespace TTP_EA.EA
     {
         public static void Test_Lab_1()
         {
-            var filePath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab_1/Dane/trivial_0.ttp";
+            var filePath = "./../../../Data/trivial_0.ttp";
 
             var trivialData = TTP_Reader.Load(filePath);
 
@@ -38,7 +38,7 @@ namespace TTP_EA.EA
                 }
 
                 double itemTakeProbalility = 0.2;
-                RandomCreator randomCreator = new RandomCreator(trivialData, itemTakeProbalility);
+                RandomCreator<TTP_Specimen> randomCreator = new RandomCreator<TTP_Specimen>(trivialData, itemTakeProbalility);
                 TTP_Specimen randomSpecimen = new TTP_Specimen(trivialData, randomCreator);
 
                 Console.WriteLine($"\nRandom specimen knapsack weight before init: {randomSpecimen.KnapsackWeight}");
@@ -49,7 +49,7 @@ namespace TTP_EA.EA
                 Console.WriteLine($"Random specimen knapsack weight after init: {randomSpecimen.KnapsackWeight}");
                 Console.WriteLine($"Random travel distance after init: {randomSpecimen.GetTravelDistance()}");
 
-                GreedyCreator greedyCreator = new GreedyCreator(trivialData);
+                GreedyCreator<TTP_Specimen> greedyCreator = new GreedyCreator<TTP_Specimen>(trivialData);
                 TTP_Specimen greedySpecimen = new TTP_Specimen(trivialData, greedyCreator);
 
                 Console.WriteLine($"\nGreedy specimen knapsack weight before init: {greedySpecimen.KnapsackWeight}");
@@ -64,10 +64,10 @@ namespace TTP_EA.EA
 
         public static void Test_Crossover()
         {
-            var filePath = "C:/Files/Studia/Sem_7/Metaheurystyki/Lab_1/Dane/trivial_0.ttp";
+            var filePath = "./../../../Data/trivial_0.ttp";
             var trivialData = TTP_Reader.Load(filePath);
 
-            ISpecimenCreator creator = new RandomCreator(trivialData, 0.3);
+            ISpecimenCreator<TTP_Specimen> creator = new RandomCreator<TTP_Specimen>(trivialData, 0.3);
 
             TTP_Specimen randomSpecimen = new TTP_Specimen(trivialData, creator);
             randomSpecimen.Init();

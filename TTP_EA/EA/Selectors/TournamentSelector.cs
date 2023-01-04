@@ -7,7 +7,7 @@ using TTP_EA.Specimen;
 
 namespace TTP_EA.EA.Selectors
 {
-    public class TournamentSelection : ISelector
+    public class TournamentSelection<T> : ISelector<T> where T : ITTPSpecimen<T>
     {
         public int SpecimenCount { get; set; }
         public bool IsMinimalizing { get; set; }
@@ -18,13 +18,13 @@ namespace TTP_EA.EA.Selectors
             IsMinimalizing = isMinimalizing;
         }
 
-        public virtual IList<TTP_Specimen> Select(IList<TTP_Specimen> currentPopulation)
+        public virtual IList<T> Select(IList<T> currentPopulation)
         {
             Random random = new Random();
-            List<TTP_Specimen> selectedSpecimens = new List<TTP_Specimen>();
+            List<T> selectedSpecimens = new List<T>();
             while (selectedSpecimens.Count != currentPopulation.Count)
             {
-                List<TTP_Specimen> tournamentSelectedSpecimens = new List<TTP_Specimen>();
+                List<T> tournamentSelectedSpecimens = new List<T>();
                 for (int j = 0; j < SpecimenCount; j++)
                 {
                     var index = random.Next(currentPopulation.Count);
@@ -42,7 +42,7 @@ namespace TTP_EA.EA.Selectors
             return selectedSpecimens;
         }
 
-        private double Evaluate(TTP_Specimen specimen)
+        private double Evaluate(T specimen)
         {
             return specimen.Score();
         }
